@@ -19,8 +19,12 @@ def create_driver():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
 
-    driver_path = ChromeDriverManager().install()
+    # Tell Selenium where Chrome is inside Render container
+    chrome_options.binary_location = "/usr/bin/chromium"
+
+    driver_path = "/usr/bin/chromedriver"
     return webdriver.Chrome(service=Service(driver_path), options=chrome_options)
+
 
 def calculate_attendance_percentage(rows):
     result = {"subjects": {}, "overall": {"present": 0, "absent": 0, "percentage": 0.0, "success": False}}
