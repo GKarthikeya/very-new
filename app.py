@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from tabulate import tabulate
-import time, re, os
+import time, re
 
 app = Flask(__name__)
 
@@ -25,7 +24,6 @@ def create_driver():
 
 def calculate_attendance_percentage(rows):
     result = {"subjects": {}, "overall": {"present": 0, "absent": 0, "percentage": 0.0, "success": False}}
-
     current_course = None
     total_present, total_absent = 0, 0
 
@@ -92,24 +90,7 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         data = get_attendance_data(username, password)
-
-        table_data = []
-        for i, (code, sub) in enumerate(data["subjects"].items(), start=1):
-            table_data.append([i, code, sub["name"], sub["present"], sub["absent"], f"{sub['percentage']}%"])
-
-        table_html = tabulate(
-            table_data,
-            headers=["S.No", "Course Code", "Course Name", "Present", "Absent", "Percentage"],
-            tablefmt="html"
-        )
-
-        return f"""
-        <h2>📊 Attendance Report</h2>
-        {table_html}
-        <p>✅ Overall Attendance: {data['overall']['percentage']}% 
-        (Present={data['overall']['present']}, Absent={data['overall']['absent']})</p>
-        <br><a href='/'>🔙 Back</a>
-        """
+        return render_template("results.html", data=data)
 
     return render_template("login.html")
 
